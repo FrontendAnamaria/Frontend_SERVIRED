@@ -8,7 +8,6 @@ import 'resultado_card_widget.dart';
 // Animación ping-pong: 10s izquierda → 10s derecha, easeInOut, sin pausa
 
 const _kLogoRisaralda = AppAssets.logoRisaralda;
-const _kLogoValle = AppAssets.logoValle;
 
 final _kResultados = [
   const ResultadoData(
@@ -18,7 +17,7 @@ final _kResultados = [
     numeros: [5, 4, 7, 1],
   ),
   const ResultadoData(
-    logoUrl: _kLogoValle,
+    logoUrl: _kLogoRisaralda,
     nombre: 'Risaralda noche',
     fecha: '04 de Mayo 2026',
     numeros: [5, 4, 7, 1],
@@ -36,7 +35,7 @@ final _kResultados = [
     numeros: [5, 4, 7, 1],
   ),
   const ResultadoData(
-    logoUrl: _kLogoValle,
+    logoUrl: _kLogoRisaralda,
     nombre: 'Risaralda noche',
     fecha: '04 de Mayo 2026',
     numeros: [5, 4, 7, 1],
@@ -48,7 +47,7 @@ final _kResultados = [
     numeros: [5, 4, 7, 1],
   ),
   const ResultadoData(
-    logoUrl: _kLogoValle,
+    logoUrl: _kLogoRisaralda,
     nombre: 'Risaralda noche',
     fecha: '04 de Mayo 2026',
     numeros: [5, 4, 7, 1],

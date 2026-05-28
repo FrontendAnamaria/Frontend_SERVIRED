@@ -50,8 +50,11 @@ abstract final class AppAssets {
     juegoImg6,     juegoImg7, juegoImg8, juegoImg9, juegoImg10,
   ];
 
+  // ── Registro ─────────────────────────────────────────────────────────────
+  static const String bannerRegistro = 'assets/images/banner_registro.png';
+
   // ── Footer — logos regulatorios ───────────────────────────────────────────
-  // Usar las imágenes de mayor resolución disponibles
-  static const String logoVigilado  = 'assets/images/logo_vigilado_supersalud.png';
-  static const String logoColjuegos = 'assets/images/coljuegos-logo-01.png';
+  // Variantes blancas exportadas desde Figma (asset real del diseño)
+  static const String logoVigilado  = 'assets/images/logo_vigilado_supersalud_white.png';
+  static const String logoColjuegos = 'assets/images/coljuegos_logo_white.png';
 }

@@ -29,11 +29,17 @@ class SectionHeaderWidget extends StatelessWidget {
           // ── Icono + Título ───────────────────────────────────────────────
           icon,
           const SizedBox(width: 8),
-          Flexible(child: Text(title, style: AppTextStyles.sectionTitle)),
+          Expanded(
+            child: Text(
+              title,
+              style: AppTextStyles.sectionTitle,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
 
           // ── Pill "Ver más" (solo en Resultados y Juegos) ─────────────────
           if (showVerMas) ...[
-            const Spacer(),
+            const SizedBox(width: 8),
             GestureDetector(
               onTap: onVerMas,
               child: Container(

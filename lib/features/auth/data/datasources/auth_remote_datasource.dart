@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../../../../core/network/api_exception.dart';
 import '../models/login_request.dart';
 import '../models/login_response.dart';
@@ -28,6 +29,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> requestPasswordRecovery(String identifier) async {
+    // TODO(backend): remove when /auth/recover-password endpoint is deployed.
+    if (kDebugMode) {
+      await Future.delayed(const Duration(milliseconds: 700));
+      return;
+    }
     try {
       await dio.post('/auth/recover-password', data: {'identifier': identifier});
     } on DioException catch (e) {

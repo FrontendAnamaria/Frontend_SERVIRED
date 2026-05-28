@@ -102,49 +102,50 @@ class _AcumuladoCardWidgetState extends State<AcumuladoCardWidget> {
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      child: SizedBox(
         width: 340,
         height: 470,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          // Glow amarillo externo al hacer hover — difuso, sin borde duro.
-          // IMPORTANTE: siempre la misma estructura de BoxShadow en ambos estados;
-          // solo animamos el alpha (0 → 0.4). Así Flutter interpola suavemente
-          // y evita artefactos visuales al pasar de 0 sombras a 1 sombra.
-          // spreadRadius:0 = glow puro sin expansión sólida (sin "franja").
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.navActiveYellow.withValues(
-                alpha: _isHovered ? 0.40 : 0.0,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Glow exterior — BlurStyle.outer pinta SOLO fuera del RRect.
+            // Al no haber color dentro del RRect, el BackdropFilter de la tarjeta
+            // no captura el glow y el gradiente interior mantiene su azul limpio.
+            AnimatedOpacity(
+              opacity: _isHovered ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: const CustomPaint(
+                size: Size(340, 470),
+                painter: _CardGlowPainter(),
               ),
-              blurRadius: 20,
-              // spreadRadius defaults to 0
+            ),
+            // Tarjeta — el BackdropFilter solo ve el fondo real de la página
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                child: Container(
+                  width: 340,
+                  height: 470,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [AppColors.cardBlueStart, AppColors.cardBlueEnd],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.cardBorderPurple,
+                      width: 1,
+                    ),
+                  ),
+                  // Solo padding vertical — el horizontal se aplica por ítem
+                  padding: const EdgeInsets.symmetric(vertical: 19),
+                  child: _buildContent(),
+                ),
+              ),
             ),
           ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [AppColors.cardBlueStart, AppColors.cardBlueEnd],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.cardBorderPurple,
-                  width: 1,
-                ),
-              ),
-              // Solo padding vertical — el horizontal se aplica por ítem
-              padding: const EdgeInsets.symmetric(vertical: 19),
-              child: _buildContent(),
-            ),
-          ),
         ),
       ),
     );
@@ -374,6 +375,31 @@ class _AcumuladoCardWidgetState extends State<AcumuladoCardWidget> {
       ],
     );
   }
+}
+
+// ── Glow exterior de la tarjeta en estado activo ─────────────────────────────
+
+// BlurStyle.outer → pinta el halo SOLO fuera del RRect, dejando el interior
+// completamente transparente. Así el BackdropFilter de la tarjeta no captura
+// el color amarillo y el gradiente interior permanece azul sin contaminación.
+class _CardGlowPainter extends CustomPainter {
+  const _CardGlowPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Offset.zero & size,
+        const Radius.circular(16),
+      ),
+      Paint()
+        ..color = AppColors.navActiveYellow
+        ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 18),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_CardGlowPainter old) => false;
 }
 
 // ── Logo placeholder ──────────────────────────────────────────────────────────

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_assets.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
+import '../../../auth/presentation/screens/otp_verification_screen.dart';
+import '../../../auth/presentation/screens/register_step1_screen.dart';
 import '../widgets/acumulados_section_widget.dart';
 import '../widgets/banner_carousel_widget.dart';
 import '../widgets/footer_widget.dart';
@@ -16,7 +20,7 @@ void _showLoginModal(BuildContext context) {
   showDialog<void>(
     context: context,
     barrierDismissible: false,
-    barrierColor: Colors.black54,
+    barrierColor: Colors.black.withValues(alpha: 0.6),
     builder: (dialogContext) => Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -24,6 +28,41 @@ void _showLoginModal(BuildContext context) {
         child: LoginFormWidget(
           onClose: () => Navigator.pop(dialogContext),
           onLoginSuccess: () => Navigator.pop(dialogContext),
+          onRegisterRequested: () {
+            Navigator.pop(dialogContext);
+            _showRegisterModal(context);
+          },
+          onRecoveryRequested: (identifier) {
+            Navigator.pop(dialogContext);
+            dialogContext.push(
+              AppRoutes.otpVerification,
+              extra: {
+                'destination': identifier,
+                'flow': OtpFlow.passwordRecovery,
+              },
+            );
+          },
+        ),
+      ),
+    ),
+  );
+}
+
+void _showRegisterModal(BuildContext context) {
+  showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    barrierColor: Colors.black.withValues(alpha: 0.6),
+    builder: (dialogContext) => Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      child: SingleChildScrollView(
+        child: RegisterStep1Widget(
+          onClose: () => Navigator.pop(dialogContext),
+          onLoginRequested: () {
+            Navigator.pop(dialogContext);
+            _showLoginModal(context);
+          },
         ),
       ),
     ),
@@ -130,6 +169,7 @@ class HomeScreen extends StatelessWidget {
             right: 0,
             child: NavbarWidget(
               onLoginTap: () => _showLoginModal(context),
+              onRegisterTap: () => _showRegisterModal(context),
             ),
           ),
         ],

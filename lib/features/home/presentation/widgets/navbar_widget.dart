@@ -34,16 +34,20 @@ import '../../../../core/theme/app_text_styles.dart';
 //     Texto: Inter SemiBold 14px · color #093048
 
 class NavbarWidget extends StatelessWidget {
-  const NavbarWidget({super.key, this.onLoginTap});
+  const NavbarWidget({super.key, this.onLoginTap, this.onRegisterTap});
 
   final VoidCallback? onLoginTap;
+  final VoidCallback? onRegisterTap;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < 720) return const _NavbarMobile();
-        return _NavbarDesktop(onLoginTap: onLoginTap);
+        return _NavbarDesktop(
+          onLoginTap: onLoginTap,
+          onRegisterTap: onRegisterTap,
+        );
       },
     );
   }
@@ -52,9 +56,10 @@ class NavbarWidget extends StatelessWidget {
 // ── Desktop ───────────────────────────────────────────────────────────────────
 
 class _NavbarDesktop extends StatelessWidget {
-  const _NavbarDesktop({this.onLoginTap});
+  const _NavbarDesktop({this.onLoginTap, this.onRegisterTap});
 
   final VoidCallback? onLoginTap;
+  final VoidCallback? onRegisterTap;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +90,7 @@ class _NavbarDesktop extends StatelessWidget {
               // Expanded + FittedBox: en desktop (1728px) sin escala;
               // en pantallas más estrechas (tests, tablet) escala
               // proporcionalmente sin lanzar overflow exception.
-              Expanded(
+              const Expanded(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.center,
@@ -93,7 +98,7 @@ class _NavbarDesktop extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
+                    children: [
                       _NavItem(label: 'Inicio', isActive: true),
                       SizedBox(width: 64),
                       _NavItem(label: 'Juegos'),
@@ -121,7 +126,7 @@ class _NavbarDesktop extends StatelessWidget {
                       children: [
                         _NavWhiteButton(label: 'Inicia sesión', onTap: onLoginTap),
                         const SizedBox(width: 16),
-                        const _NavYellowButton(label: 'Regístrate'),
+                        _NavYellowButton(label: 'Regístrate', onTap: onRegisterTap),
                       ],
                     ),
                   ],
@@ -242,14 +247,15 @@ class _NavWhiteButton extends StatelessWidget {
 // Texto: Inter SemiBold 14px · color: #093048
 
 class _NavYellowButton extends StatelessWidget {
-  const _NavYellowButton({required this.label});
+  const _NavYellowButton({required this.label, this.onTap});
 
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
         height: 41,
         width: 184,
