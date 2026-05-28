@@ -17,7 +17,7 @@ class DocumentTypeDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<DocumentType>(
-      value: value,
+      initialValue: value,
       onChanged: enabled ? onChanged : null,
       validator: (v) => v == null ? 'Selecciona el tipo de documento.' : null,
       decoration: const InputDecoration(

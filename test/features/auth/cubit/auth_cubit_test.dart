@@ -13,7 +13,8 @@ class MockRequestPasswordRecoveryUseCase extends Mock implements RequestPassword
 class MockVerifyOtpUseCase extends Mock implements VerifyOtpUseCase {}
 class MockResetPasswordUseCase extends Mock implements ResetPasswordUseCase {}
 
-const _testUser = UserEntity(
+// DateTime no es const — se declara como variable final de nivel superior
+final _testUser = UserEntity(
   id: '123',
   documentType: 'CC',
   documentNumber: '1234567890',
@@ -63,7 +64,7 @@ void main() {
       },
       expect: () => [
         const AuthState(status: AuthStatus.loading),
-        const AuthState(status: AuthStatus.success, user: _testUser),
+        AuthState(status: AuthStatus.success, user: _testUser),
       ],
     );
 

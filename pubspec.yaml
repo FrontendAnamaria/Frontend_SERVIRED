@@ -38,6 +38,9 @@ dependencies:
   # Tipografías Figma: Poppins, Inter, Source Sans Pro, Nunito
   google_fonts: ^6.2.1
 
+  # Renderizado de SVG (logo Gane y otros assets vectoriales)
+  flutter_svg: ^2.0.10+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
