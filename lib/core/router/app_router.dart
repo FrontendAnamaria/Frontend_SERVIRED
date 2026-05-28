@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/recover_password_screen.dart';
 import '../../features/auth/presentation/screens/otp_verification_screen.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
 import '../../shared/screens/placeholder_screen.dart';
 
 class AppRoutes {
@@ -21,7 +22,7 @@ class AppRouter {
   AppRouter._();
 
   static final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.login,
+    initialLocation: AppRoutes.home,
     debugLogDiagnostics: false,
     routes: [
       GoRoute(
@@ -48,7 +49,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.home,
         name: 'home',
-        builder: (context, state) => const PlaceholderScreen(title: 'Inicio'),
+        builder: (context, state) => const HomeScreen(),
       ),
       GoRoute(
         path: AppRoutes.juegos,

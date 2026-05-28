@@ -14,19 +14,26 @@ import '../cubit/auth_state.dart';
 import '../widgets/gane_logo_widget.dart';
 
 // ──────────────────────────────────────────────────────────────────────────────
-// LoginScreen
+// LoginFormWidget
 // Figma: plataforma-Gane-Web · node 561:8741 "Inicio de sesión"
-// Patrón: modal dialog overlay sobre fondo oscuro (landing page)
+// Reusable: used inside LoginScreen (full page) and as modal dialog content.
 // ──────────────────────────────────────────────────────────────────────────────
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginFormWidget extends StatefulWidget {
+  const LoginFormWidget({
+    super.key,
+    required this.onClose,
+    required this.onLoginSuccess,
+  });
+
+  final VoidCallback onClose;
+  final VoidCallback onLoginSuccess;
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginFormWidget> createState() => _LoginFormWidgetState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginFormWidgetState extends State<LoginFormWidget> {
   final _formKey = GlobalKey<FormState>();
   final _docNumberController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -35,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   bool _obscurePassword = true;
 
-  // Tracking de campos tocados para mostrar errores inline (skill §Step 5)
   bool _docNumberTouched = false;
   bool _passwordTouched = false;
 
@@ -66,73 +72,81 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // Fondo: navy oscuro representando la landing page detrás del modal
-      backgroundColor: AppColors.pageBackground,
-      body: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
-          if (state.status == AuthStatus.success) {
-            context.go(AppRoutes.home);
-          }
-          if (state.status == AuthStatus.error &&
-              state.errorMessage != null) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage!),
-                  backgroundColor: AppColors.error,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-              );
-            context.read<AuthCubit>().clearError();
-          }
-        },
-        builder: (context, state) {
-          return Stack(
-            children: [
-              // Fondo con gradiente navy (simula la página detrás del modal)
-              _PageBackground(),
-
-              // Modal centrado
-              Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 32),
-                  child: _LoginCard(
-                    formKey: _formKey,
-                    docNumberController: _docNumberController,
-                    passwordController: _passwordController,
-                    selectedDocType: _selectedDocType,
-                    rememberMe: _rememberMe,
-                    obscurePassword: _obscurePassword,
-                    isLoading: state.isLoading,
-                    docNumberTouched: _docNumberTouched,
-                    passwordTouched: _passwordTouched,
-                    canSubmit: _canSubmit,
-                    onDocTypeChanged: (t) =>
-                        setState(() => _selectedDocType = t),
-                    onRememberChanged: (v) =>
-                        setState(() => _rememberMe = v ?? false),
-                    onTogglePassword: () =>
-                        setState(() => _obscurePassword = !_obscurePassword),
-                    onDocNumberChanged: (_) => setState(() {}),
-                    onPasswordChanged: (_) => setState(() {}),
-                    onSubmit: () => _onSubmit(context),
-                    onForgotPassword: () =>
-                        context.push(AppRoutes.recoverPassword),
-                    onRegister: () {
-                      // TODO: navegar a pantalla de registro cuando esté disponible
-                    },
-                    onClose: () => context.go(AppRoutes.home),
-                  ),
-                ),
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStatus.success) {
+          widget.onLoginSuccess();
+        }
+        if (state.status == AuthStatus.error && state.errorMessage != null) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage!),
+                backgroundColor: AppColors.error,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
-            ],
-          );
-        },
+            );
+          context.read<AuthCubit>().clearError();
+        }
+      },
+      builder: (context, state) {
+        return _LoginCard(
+          formKey: _formKey,
+          docNumberController: _docNumberController,
+          passwordController: _passwordController,
+          selectedDocType: _selectedDocType,
+          rememberMe: _rememberMe,
+          obscurePassword: _obscurePassword,
+          isLoading: state.isLoading,
+          docNumberTouched: _docNumberTouched,
+          passwordTouched: _passwordTouched,
+          canSubmit: _canSubmit,
+          onDocTypeChanged: (t) => setState(() => _selectedDocType = t),
+          onRememberChanged: (v) => setState(() => _rememberMe = v ?? false),
+          onTogglePassword: () =>
+              setState(() => _obscurePassword = !_obscurePassword),
+          onDocNumberChanged: (_) => setState(() {}),
+          onPasswordChanged: (_) => setState(() {}),
+          onSubmit: () => _onSubmit(context),
+          onForgotPassword: () => context.push(AppRoutes.recoverPassword),
+          onRegister: () {
+            // TODO: navegar a pantalla de registro cuando esté disponible
+          },
+          onClose: widget.onClose,
+        );
+      },
+    );
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// LoginScreen — full-page route wrapper (acceso directo por URL /login)
+// ──────────────────────────────────────────────────────────────────────────────
+
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.pageBackground,
+      body: Stack(
+        children: [
+          const _PageBackground(),
+          Center(
+            child: SingleChildScrollView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+              child: LoginFormWidget(
+                onClose: () => context.go(AppRoutes.home),
+                onLoginSuccess: () => context.go(AppRoutes.home),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -143,6 +157,8 @@ class _LoginScreenState extends State<LoginScreen> {
 // ──────────────────────────────────────────────────────────────────────────────
 
 class _PageBackground extends StatelessWidget {
+  const _PageBackground();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -151,7 +167,7 @@ class _PageBackground extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            AppColors.primary700.withOpacity(0.95),
+            AppColors.primary700.withValues(alpha: 0.95),
             AppColors.pageBackground,
           ],
         ),
@@ -241,7 +257,7 @@ class _LoginCard extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // ── Tipo de documento ──────────────────────────────────
-                  _FormLabel(text: 'Tipo de documento*'),
+                  const _FormLabel(text: 'Tipo de documento*'),
                   const SizedBox(height: 6),
                   _DocTypeDropdown(
                     value: selectedDocType,
@@ -251,7 +267,7 @@ class _LoginCard extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // ── Número de documento ────────────────────────────────
-                  _FormLabel(text: 'Número de documento*'),
+                  const _FormLabel(text: 'Número de documento*'),
                   const SizedBox(height: 6),
                   _FormInput(
                     controller: docNumberController,
@@ -268,7 +284,7 @@ class _LoginCard extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // ── Contraseña ─────────────────────────────────────────
-                  _FormLabel(text: 'Contraseña*'),
+                  const _FormLabel(text: 'Contraseña*'),
                   const SizedBox(height: 6),
                   _PasswordInput(
                     controller: passwordController,
@@ -376,7 +392,7 @@ class _DocTypeDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<DocumentType>(
-      value: value,
+      initialValue: value,
       onChanged: enabled ? onChanged : null,
       validator: (v) => v == null ? 'Selecciona el tipo de documento.' : null,
       hint: Text('Selecciona tu documento', style: AppTextStyles.inputHint),
@@ -406,7 +422,6 @@ class _FormInput extends StatelessWidget {
     this.textInputAction,
     this.onChanged,
     this.validator,
-    this.onSubmitted,
   });
 
   final TextEditingController controller;
@@ -417,7 +432,6 @@ class _FormInput extends StatelessWidget {
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
-  final ValueChanged<String>? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -428,7 +442,6 @@ class _FormInput extends StatelessWidget {
       inputFormatters: inputFormatters,
       textInputAction: textInputAction,
       onChanged: onChanged,
-      onFieldSubmitted: onSubmitted,
       validator: validator,
       style: AppTextStyles.inputText,
       decoration: _inputDecoration(
@@ -543,7 +556,7 @@ class _LoginButton extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         color: active ? AppColors.secondary500 : AppColors.buttonDisabled,
-        borderRadius: BorderRadius.circular(100), // pill
+        borderRadius: BorderRadius.circular(100),
       ),
       child: Material(
         color: Colors.transparent,
@@ -645,7 +658,6 @@ InputDecoration _inputDecoration({String? hint, required bool hasError}) {
           const BorderSide(color: AppColors.inputBorderError, width: 1.5),
     ),
     errorStyle: AppTextStyles.errorText,
-    // ícono rojo antes del mensaje de error (igual al diseño Figma)
     prefixIconConstraints:
         const BoxConstraints(minWidth: 0, minHeight: 0),
     errorMaxLines: 2,
