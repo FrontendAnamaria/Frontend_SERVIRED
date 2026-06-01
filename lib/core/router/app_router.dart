@@ -4,6 +4,9 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/recover_password_screen.dart';
 import '../../features/auth/presentation/screens/otp_verification_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/juegos/presentation/screens/juegos_screen.dart';
+import '../../features/juegos/presentation/screens/dominguero_screen.dart';
+import '../../features/resultados/presentation/screens/resultados_screen.dart';
 import '../../shared/screens/placeholder_screen.dart';
 
 class AppRoutes {
@@ -14,8 +17,10 @@ class AppRoutes {
   static const String otpVerification = '/otp-verification';
   static const String home = '/home';
   static const String juegos = '/juegos';
+  static const String dominguero = '/juegos/dominguero';
   static const String pagos = '/pagos';
   static const String wallet = '/wallet';
+  static const String resultados = '/resultados';
 }
 
 class AppRouter {
@@ -54,7 +59,17 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.juegos,
         name: 'juegos',
-        builder: (context, state) => const PlaceholderScreen(title: 'Juegos'),
+        builder: (context, state) => const JuegosScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.dominguero,
+        name: 'dominguero',
+        builder: (context, state) => const DomingueroScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.resultados,
+        name: 'resultados',
+        builder: (context, state) => const ResultadosScreen(),
       ),
       GoRoute(
         path: AppRoutes.pagos,

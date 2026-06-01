@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../../../../core/network/api_exception.dart';
 import '../models/login_request.dart';
 import '../models/login_response.dart';
+import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<LoginResponse> login(LoginRequest request);
@@ -19,6 +20,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<LoginResponse> login(LoginRequest request) async {
+    // TODO(backend): remove when /auth/login endpoint is deployed.
+    const useMock = bool.fromEnvironment('USE_MOCK', defaultValue: false);
+    if (kDebugMode || useMock) {
+      await Future.delayed(const Duration(milliseconds: 800));
+      return LoginResponse(
+        token: 'mock-token-dev',
+        refreshToken: 'mock-refresh-token-dev',
+        user: UserModel(
+          id: '1',
+          documentType: request.documentType,
+          documentNumber: request.documentNumber,
+          fullName: 'Usuario Demo',
+          email: 'demo@servired.com',
+          phone: '3001234567',
+          birthDate: '1990-01-01',
+        ),
+      );
+    }
     try {
       final response = await dio.post('/auth/login', data: request.toJson());
       return LoginResponse.fromJson(response.data as Map<String, dynamic>);
@@ -30,7 +49,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> requestPasswordRecovery(String identifier) async {
     // TODO(backend): remove when /auth/recover-password endpoint is deployed.
-    if (kDebugMode) {
+    const useMock = bool.fromEnvironment('USE_MOCK', defaultValue: false);
+    if (kDebugMode || useMock) {
       await Future.delayed(const Duration(milliseconds: 700));
       return;
     }

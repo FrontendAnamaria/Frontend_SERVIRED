@@ -26,9 +26,10 @@ class JuegoData {
 // Hover: overlay rgba(0,0,0,0.4) + botón "Jugar" centrado sobre la imagen
 
 class JuegoCardWidget extends StatefulWidget {
-  const JuegoCardWidget({super.key, required this.data});
+  const JuegoCardWidget({super.key, required this.data, this.onTap});
 
   final JuegoData data;
+  final VoidCallback? onTap;
 
   @override
   State<JuegoCardWidget> createState() => _JuegoCardWidgetState();
@@ -51,7 +52,9 @@ class _JuegoCardWidgetState extends State<JuegoCardWidget> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
-      child: SizedBox(
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: SizedBox(
         width: 288,
         height: 360,
         child: Stack(
@@ -186,6 +189,7 @@ class _JuegoCardWidgetState extends State<JuegoCardWidget> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

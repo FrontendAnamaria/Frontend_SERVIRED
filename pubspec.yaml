@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   # Estado - BLoC/Cubit (SPEC-FE-001 §9.1)
   flutter_bloc: ^8.1.6
@@ -33,7 +35,7 @@ dependencies:
   shared_preferences: ^2.3.0
 
   # Internacionalización y formateo de fechas
-  intl: ^0.19.0
+  intl: ^0.20.2
 
   # Tipografías Figma: Poppins, Inter, Source Sans Pro, Nunito
   google_fonts: ^6.2.1

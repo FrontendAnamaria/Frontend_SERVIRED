@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import '../../core/constants/app_assets.dart';
 import '../../core/theme/app_colors.dart';
 
 class AppTextField extends StatefulWidget {
@@ -78,15 +80,26 @@ class _AppTextFieldState extends State<AppTextField> {
         hintText: widget.hint,
         counterText: '',
         prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon, size: 20) : null,
+        // Figma: eye-close (oculto) / eye-alt (visible) · 24×24px · neutral5
         suffixIcon: widget.obscureText
-            ? IconButton(
-                onPressed: () => setState(() => _obscure = !_obscure),
-                icon: Icon(
-                  _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                  size: 20,
-                  color: AppColors.textSecondary,
+            ? GestureDetector(
+                onTap: () => setState(() => _obscure = !_obscure),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: SvgPicture.asset(
+                    _obscure ? AppAssets.eyeClose : AppAssets.eyeAlt,
+                    width: 24,
+                    height: 24,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.textSecondary,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
               )
+            : null,
+        suffixIconConstraints: widget.obscureText
+            ? const BoxConstraints(minWidth: 0, minHeight: 0)
             : null,
       ),
     );

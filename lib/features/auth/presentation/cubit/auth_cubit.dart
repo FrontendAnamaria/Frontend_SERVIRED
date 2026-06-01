@@ -101,4 +101,16 @@ class AuthCubit extends Cubit<AuthState> {
       emit(state.copyWith(status: AuthStatus.initial));
     }
   }
+
+  // Solo para builds con USE_MOCK=true — simula sesión activa sin I/O.
+  void emitMockSuccess() {
+    emit(state.copyWith(status: AuthStatus.success));
+  }
+
+  /// Emitido al confirmar el código OTP del registro.
+  /// Diferencia el éxito de registro del éxito de login para que la
+  /// HomeScreen pueda mostrar el toast de bienvenida.
+  void emitRegistrationSuccess() {
+    emit(state.copyWith(status: AuthStatus.registrationSuccess));
+  }
 }

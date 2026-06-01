@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/user_entity.dart';
 
-enum AuthStatus { initial, loading, success, error, otpSent, passwordReset }
+enum AuthStatus { initial, loading, success, error, otpSent, passwordReset, registrationSuccess }
 
 class AuthState extends Equatable {
   const AuthState({
